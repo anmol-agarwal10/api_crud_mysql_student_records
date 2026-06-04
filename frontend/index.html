@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management System</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: #f4f6f9;
+        padding: 30px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    .card {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+        margin-bottom: 15px;
+        color: #444;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    button {
+        padding: 10px 15px;
+        background: #007bff;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-right: 5px;
+    }
+
+    button:hover {
+        background: #0056b3;
+    }
+
+    .delete-btn {
+        background: #dc3545;
+    }
+
+    .delete-btn:hover {
+        background: #b52a37;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    table th,
+    table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
+
+    table th {
+        background: #007bff;
+        color: white;
+    }
+
+    .message {
+        margin-top: 10px;
+        color: green;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Student Management System</h1>
+
+    <!-- Create Student -->
+    <div class="card">
+        <h2>Create Student</h2>
+
+        <input type="text" id="name" placeholder="Student Name">
+        <input type="number" id="age" placeholder="Age">
+        <input type="text" id="course" placeholder="Course">
+
+        <button onclick="createStudent()">Create Student</button>
+
+        <div id="createMessage" class="message"></div>
+    </div>
+
+    <!-- Search Student -->
+    <div class="card">
+        <h2>Get Student By ID</h2>
+
+        <input type="number" id="searchId" placeholder="Student ID">
+
+        <button onclick="getStudent()">Search</button>
+
+        <pre id="studentResult"></pre>
+    </div>
+
+    <!-- Update Student -->
+    <div class="card">
+        <h2>Update Student</h2>
+
+        <input type="number" id="updateId" placeholder="Student ID">
+        <input type="text" id="updateName" placeholder="Name">
+        <input type="number" id="updateAge" placeholder="Age">
+        <input type="text" id="updateCourse" placeholder="Course">
+
+        <button onclick="updateStudent()">Update Student</button>
+
+        <div id="updateMessage" class="message"></div>
+    </div>
+
+    <!-- Delete Student -->
+    <div class="card">
+        <h2>Delete Student</h2>
+
+        <input type="number" id="deleteId" placeholder="Student ID">
+
+        <button class="delete-btn" onclick="deleteStudent()">Delete Student</button>
+
+        <div id="deleteMessage" class="message"></div>
+    </div>
+
+    <!-- All Students -->
+    <div class="card">
+        <h2>All Students</h2>
+
+        <button onclick="loadStudents()">Refresh List</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Course</th>
+                </tr>
+            </thead>
+            <tbody id="studentTable"></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+
+const API_BASE_URL = "http://localhost:8000";
+
+
+// Load All Students
+async function loadStudents() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/allstudent`);
+        const result = await response.json();
+
+        const table = document.getElementById("studentTable");
+        table.innerHTML = "";
+
+        result.data.forEach(student => {
+            table.innerHTML += `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.age}</td>
+                    <td>${student.course}</td>
+                </tr>
+            `;
+        });
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+
+// Create Student
+async function createStudent() {
+
+    const name = document.getElementById("name").value;
+    const age = document.getElementById("age").value;
+    const course = document.getElementById("course").value;
+
+    const response = await fetch(
+        `${API_BASE_URL}/createstudent?name=${encodeURIComponent(name)}&age=${age}&course=${encodeURIComponent(course)}`,
+        {
+            method: "POST"
+        }
+    );
+
+    const result = await response.json();
+
+    document.getElementById("createMessage").innerText =
+        result.message;
+
+    loadStudents();
+}
+
+
+// Get Student By ID
+async function getStudent() {
+
+    const id = document.getElementById("searchId").value;
+
+    const response = await fetch(
+        `${API_BASE_URL}/student/${id}`
+    );
+
+    const result = await response.json();
+
+    document.getElementById("studentResult").textContent =
+        JSON.stringify(result, null, 2);
+}
+
+
+// Update Student
+async function updateStudent() {
+
+    const id = document.getElementById("updateId").value;
+    const name = document.getElementById("updateName").value;
+    const age = document.getElementById("updateAge").value;
+    const course = document.getElementById("updateCourse").value;
+
+    const response = await fetch(
+        `${API_BASE_URL}/student_update/${id}?name=${encodeURIComponent(name)}&age=${age}&course=${encodeURIComponent(course)}`,
+        {
+            method: "POST"
+        }
+    );
+
+    const result = await response.json();
+
+    document.getElementById("updateMessage").innerText =
+        result.message;
+
+    loadStudents();
+}
+
+
+// Delete Student
+async function deleteStudent() {
+
+    const id = document.getElementById("deleteId").value;
+
+    if (!confirm("Delete this student?")) {
+        return;
+    }
+
+    const response = await fetch(
+        `${API_BASE_URL}/students/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    const result = await response.json();
+
+    document.getElementById("deleteMessage").innerText =
+        result.message;
+
+    loadStudents();
+}
+
+
+// Load data on startup
+loadStudents();
+
+</script>
+
+</body>
+</html>
