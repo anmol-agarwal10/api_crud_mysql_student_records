@@ -48,7 +48,11 @@ def create_student(name: str, age: int, course: str):
 # Get a student record
 @app.get("/student/{student_id}")
 def get_student(student_id: int):
-    details = db.read(f"SELECT * FROM students where id={student_id}")[0]
+    details = db.read(f"SELECT * FROM students where id={student_id}")
+    try:
+        details = details[0]
+    except IndexError:
+        return {"message": "Student not found"}
 
     # Format to JSON object
     formatted_details = [
@@ -62,8 +66,11 @@ def get_student(student_id: int):
 def student_update(student_id: int,name: str, age: int, course:str):
     db.write(f"UPDATE students SET name = '{name}', age = {age}, course = '{course}' WHERE id = {student_id};")
     details = db.read(f'select * from students where id={student_id}')
-    details = db.read(f"SELECT * FROM students where id={student_id}")[0]
-    
+    try:
+        details = details[0]
+    except IndexError:
+        return {"message": "Student not found"}
+
     # Format to JSON object
     formatted_details = [
             {"id": details[0], "name": details[1], "age": details[2], "course": details[3]}
@@ -74,6 +81,12 @@ def student_update(student_id: int,name: str, age: int, course:str):
 # Delete student record
 @app.delete("/students/{student_id}")
 def delete_student(student_id: int):
+    details = db.read(f"SELECT * FROM students where id={student_id}")
+    try:
+        details = details[0]
+    except IndexError:
+        return {"message": "Student not found"}
+    
     db.write(f"DELETE FROM students WHERE id = {student_id};")
     return {"message":"successly deleted"}
 
