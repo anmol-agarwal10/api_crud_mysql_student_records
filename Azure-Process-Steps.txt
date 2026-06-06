@@ -1,0 +1,96 @@
+# File: requirements.txt
+  >> Add project dependencies in this file
+fastapi>=0.115.0,<1.0.0
+uvicorn>=0.30.0,<1.0.0
+mysql-connector-python>=9.0.0,<10.0.0
+
+>> Update DB connection variables to use Azure Env variables in Code file
+
+# Setting >> Configuration >> Stack Settings:
+  >> Set Stack & its Version:
+[Stack: Python & Version: Python 3.12 ]
+  >> Set startup command (for FastAPI):
+uvicorn api.main:app --host 0.0.0.0 --port 8000
+
+
+# Settings >> Environment Variables >> add:  (If you deployed via ZIP)
+SCM_DO_BUILD_DURING_DEPLOYMENT = true
+ENABLE_ORYX_BUILD = true
+  >> Add DB ENV variables
+DB_HOST = <Endpoint: from Azure MySQL server instance>
+DB_USER = ewiymrkder
+DB_PASSWORD = aXRXde5o$B01jzkSAs
+DB_NAME = project-api-student-wa-2-database
+
+# Deployment >> Deployment Center
+Source >> Publish Files [new]
+Browse >> upload file
+Wait & See log until deployment status is success.
+
+# Stop/Start or Restart web App 
+Overview >> 
+   >> Restart app
+   >> Browse or click 'Default domain' link : to open deployed app in browser
+
+# Api-CORS: 
+  >> Add UI app url in 'Allowed Origins' in API app resource
+
+# Log stream
+  >> Open log app log stream to see error if any
+
+# Advance Tool : Kudu
+  >> See deployment files
+  >> See server ENV related configuration
+  >> Run SSH command for any use case
+
+
+# In Azure MySQL server:
+  >> Settings → Networking → Firewall
+Enable: ✔ Allow public access from any Azure service within Azure to this server
+
+# In Azure MySQL server:
+  >> Settings → Connect: Get DB Connection details
+  >> Also see connection strings to use other than Python
+  >> local use of connection
+
+# Frontend app
+  >> Change Api base url from localhost to Azure api app endpoint in UI Code 
+
+Search: static web app
+>> Select 'Azure Service Only'  [not Free trial]
+>> Select 'Static Web App' >> Create
+>> Plan Type: 	Free: For hobby or personal projects
+>> Deployment details: Other
+>> Region: East Asia
+
+# Deployment Azure Static Wab App
+>> Install the SWA CLI
+npm install -g @azure/static-web-apps-cli
+['Static Web App' does not allow direct file upload as Azure service-web app]
+
+
+This allow direct file upload.
+Add: Azure Storage Resource (for Static Web App)
+  >> Create Storage resource
+  >> Standard
+Enable Static Website Hosting
+  >> Data Management >> Static Website >> choose 'Enabled' option >> Add 'index.html' in Index document name
+Get website endpoint/url:
+  >> Data Management >> Static Website >> open 'Primary endpoint' in browser to run website
+Host web site files
+  >> Data Storage >> Containers >> go to $web >> Upload files here
+
+
+Database (New)
+---------------
+Host Name: <Endpoint: from Azure MySQL server instance>
+Server name: project-api-student-wa-2-server
+Engine: MySQL - Flexible Server
+Compute tier and size: GeneralPurpose Standard_D2ds_v4
+Database name: project-api-student-wa-2-database
+Region: East Asia
+Username: ewiymrkder
+Password: aXRXde5o$B01jzkSAs
+
+
+
