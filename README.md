@@ -50,9 +50,7 @@ Run Application
 uvicorn app:app --reload
 
 Application:
-
 http://localhost:8000
 
 API Docs:
-
-http://localhost:80
+http://localhost:8000/docs
